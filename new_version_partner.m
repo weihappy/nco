@@ -11,7 +11,7 @@ f = 5e6; % 输入信号频率
 %生成仿真需要的输入信号，并对信号幅度加衰落且定点化
 bitNumInSig=16;
 inSig = .9*sin(2*pi*f*t);
-plot(t,inSig)
+
 inSig(1e5:2e5) = .3*inSig(1e5:2e5);
 inSig(3e5:end) = .8*inSig(3e5:end);
 inSig=round(inSig*2^(bitNumInSig-1));
@@ -87,7 +87,7 @@ firOut=round(firOut/2^(bitNumFirCoe-1));
 firDecimatRatio=4;
 AGCIn=downsample(firOut,firDecimatRatio);
 sig_fix=AGCIn;
-plot(real(AGCIn));
+
 % AGC模块
 % 根据不同的应用AGC分为固定增益变化率和非固定增益变化率
 % 固定增益变化率：取值范围为0~1.4063dB（增益因子M=15，E=15）
@@ -166,4 +166,3 @@ end
 figure;
 hold on;
 
-plot(real(mul_agc_sig));
