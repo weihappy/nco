@@ -12,21 +12,56 @@ f = 5e6; % 输入信号频率
 bitNumInSig=16;
 inSig = .9*sin(2*pi*f*t);
 
+figure(1)
+plot(t,inSig)
+
 inSig(1e5:2e5) = .3*inSig(1e5:2e5);
+
+figure(2)
+plot(t,inSig)
+
 inSig(3e5:end) = .8*inSig(3e5:end);
+
+figure(3)
+plot(t,inSig)
+
 inSig=round(inSig*2^(bitNumInSig-1));
+
+figure(4)
+plot(t,inSig)
+
 
 %生成定点的本振信号
 bitNumNcoSig=19;
 N = 2^22;
 sinwave = round(2^(bitNumNcoSig-1)*sin(linspace(0,2*pi-2*pi/N,N))); %生成单周期的余弦，并定点化
+
+figure(5)
+plot(sinwave)
+
 ssin = sinwave(mod(round(mod(flo*t,1)*N),N)+1);  %生成sin
+
+figure(6)
+plot(ssin)
+
 scos = sinwave(mod(round(mod(flo*t,1)*N)+N/4,N)+1);  %生成cos
+
+figure(7)
+plot(scos)
+
 nco = ssin+1i*scos;
 
 %与输入信号进行混频，并对其输出信号位宽重新进行定义
 mixOut = inSig.*nco;
+
+figure(8)
+plot(mixOut)
+
 mixOut=round(mixOut/2^(bitNumNcoSig-1)); 
+
+figure(9)
+plot(mixOut)
+
 
 %CIC滤波抽取，并对其输出信号位宽重新进行定义
 bitNumCicStages=30; %积分器与滤波器的位宽
@@ -42,7 +77,15 @@ hm = mfilt.cicdecim(cicDecimatRatio,1,cicStagesNum,bitNumInSig,bitNumICicOut,bit
 sts=int(hm.states);
 set(hm,'InputFracLength',0);
 cicOut = double(filter(hm,mixOut));
+
+figure(10)
+plot(cicOut)
+
 cicOut=round(cicOut/cicGain);
+
+figure(11)
+plot(cicOut)
+ 
 
 
 
@@ -82,6 +125,9 @@ hm = design(fdesign.lowpass(0.06,0.09,0.5,80));  %系数分别对应Fp（通带截止频率）
 hm.Numerator=round(hm.Numerator*2^(bitNumFirCoe-1)); 
 firOut = filter(hm,hf3Out);
 firOut=round(firOut/2^(bitNumFirCoe-1)); 
+
+figure(12)
+plot(firOut)
 
 %对信号进行4倍抽取
 firDecimatRatio=4;
@@ -163,6 +209,5 @@ for i = 1:length(sig_fix)
     % 累计增益
     sum_gain = sum_gain+agc_loop_gain(i);
 end
-figure;
 hold on;
 
